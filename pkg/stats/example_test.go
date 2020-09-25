@@ -1,6 +1,8 @@
 package stats
 
 import (
+	"testing"
+	"reflect"
 	"fmt"
 
 	"github.com/shuhrat-shokirov/bank/v2/pkg/types"
@@ -59,4 +61,20 @@ func ExampleTotalInCategory() {
 	totalInCategory := TotalInCategory(payments, inCategory)
 	fmt.Println(totalInCategory)
 	//Output:  1000000
+}
+
+func TestCategoriesAvg(t *testing.T) {
+	payments := []types.Payment{
+		{
+			Category: "car",
+			Amount: 0,
+		},
+	}
+	want := map[types.Category]types.Money{
+		"car": 0,
+	}
+	got := CategoriesAvg(payments)
+	if !reflect.DeepEqual(want,got){
+		t.Errorf("want: %v, got: %v", want, got)
+	}
 }
