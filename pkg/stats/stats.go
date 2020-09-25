@@ -31,12 +31,14 @@ func CategoriesAvg(payments []types.Payment) map[types.Category]types.Money {
 	moneys := map[types.Category]types.Money{}
 	quantity := map[types.Category]types.Money{}
 	for _, payment := range payments {
-		moneys[payment.Category] += payment.Amount
-		quantity[payment.Category]++
+		if payment.Status != types.StatusFail {
+			moneys[payment.Category] += payment.Amount
+			quantity[payment.Category]++
+		}
 	}
 
-	for key := range moneys{
-		moneys[key] /=quantity[key]
+	for key := range moneys {
+		moneys[key] /= quantity[key]
 	}
 	return moneys
 }
