@@ -2,6 +2,8 @@ package stats
 
 import (
 	"fmt"
+	"reflect"
+	"testing"
 
 	"github.com/shuhrat-shokirov/bank/v2/pkg/types"
 )
@@ -59,4 +61,72 @@ func ExampleTotalInCategory() {
 	totalInCategory := TotalInCategory(payments, inCategory)
 	fmt.Println(totalInCategory)
 	//Output:  1000000
+}
+
+func TestCategoriesAvg_manyCategory(t *testing.T) {
+	payments := []types.Payment{
+		{
+			Category: "car",
+			Amount:   0,
+			Status:   types.StatusOk,
+		},
+		{
+			Category: "car",
+			Amount:   100,
+			Status:   types.StatusInProgress,
+		},
+		{
+			Category: "food",
+			Amount:   10000,
+			Status:   types.StatusOk,
+		},
+		{
+			Category: "fun",
+			Amount:   100,
+			Status:   types.StatusOk,
+		},
+		{
+			Category: "fun",
+			Amount:   100,
+			Status:   types.StatusFail,
+		},
+	}
+	want := map[types.Category]types.Money{
+		"car":  50,
+		"food": 10000,
+		"fun":  100,
+	}
+	got := CategoriesAvg(payments)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want: %v, got: %v", want, got)
+	}
+}
+
+func TestCategoriesAvg_empty(t *testing.T) {
+	payments := []types.Payment{}
+	want := map[types.Category]types.Money{}
+	got := CategoriesAvg(payments)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want: %v, got: %v", want, got)
+	}
+}
+
+func TestCategoriesAvg_notFound(t *testing.T) {
+	payments := []types.Payment{
+		{
+			Category: "car",
+			Amount:   0,
+			Status:   types.StatusFail,
+		},
+		{
+			Category: "car",
+			Amount:   100,
+			Status:   types.StatusFail,
+		},
+	}
+	want := map[types.Category]types.Money{}
+	got := CategoriesAvg(payments)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want: %v, got: %v", want, got)
+	}
 }
